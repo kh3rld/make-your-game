@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space Invaders</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: black;
+        color: white;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+      }
+
+      #game-container {
+        position: relative;
+        width: 800px;
+        height: 600px;
+        margin: 20px auto;
+        background: #111;
+        overflow: hidden;
+      }
+
+      #scoreboard {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 20px;
+        background: #222;
+        margin: 0 auto;
+        width: 760px;
+      }
+
+      .entity {
+        position: absolute;
+        transition: transform 0.016s linear;
+      }
+
+      .player {
+        width: 40px;
+        height: 20px;
+        background: #0f0;
+      }
+
+      .enemy {
+        width: 30px;
+        height: 30px;
+        background: #f00;
+      }
+
+      .bullet {
+        width: 4px;
+        height: 12px;
+        background: #ff0;
+      }
+
+      .player-bullet {
+        background: #0ff;
+      }
+
+      #pause-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .menu-content {
+        background: #333;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      button {
+        display: block;
+        width: 200px;
+        padding: 10px;
+        margin: 10px auto;
+        background: #444;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="scoreboard">
+      <div id="score">Score: 0</div>
+      <div id="timer">Time: 0s</div>
+      <div id="lives">Lives: 3</div>
+    </div>
+    <div id="game-container"></div>
+    <div id="pause-menu">
+      <div class="menu-content">
+        <h2>Game Paused</h2>
+        <button id="continue">Continue</button>
+        <button id="restart">Restart</button>
+      </div>
+    </div>
+    <script src="game.js"></script>
+  </body>
+</html>
