@@ -4,6 +4,9 @@ const width = 15
 const height = 15
 const enemiesRemoved = []
 let currentShooterIndex  = 202
+let enemiesId 
+let isGoingRight = true
+let direction =1
 
 //create the grid for the game
 for (let i = 0; i < width * width; i++) {
@@ -22,6 +25,7 @@ const enemies = [0,1,2,3,4,5,6,7,8,9,10,
                  30,31,32,33,34,35,36,37,38,39,40
                 ]
 
+// draw the enemy ships
 function draw(){
     for(let i = 0; i < enemies.length; i++){
         if (!enemiesRemoved.includes(i)){
@@ -33,6 +37,14 @@ function draw(){
 draw()
 
 squares[currentShooterIndex].classList.add('player')
+
+//function to remove the enemies
+function remove(){
+    for(let i =0; i < enemies.length; i++){
+        squares[enemies[i]].classList.remove('enemy')
+    }
+}
+
 
 //moving the player(shooter) left and right
 function moveShooter(e){
@@ -51,3 +63,40 @@ function moveShooter(e){
         
 }
 document.addEventListener('keydown', moveShooter)
+
+//function to move the enemies
+function moveEnemies(){
+    const leffEdge = enemies[0] % width === 0
+    const rightEdge = enemies[enemies.length -1] % width === width-1 
+    remove()
+
+  
+
+    if (rightEdge && isGoingRight) {
+          for (let i=0; i< enemies.length; i++){
+        enemies[i] += width +1
+        direction = -1
+        isGoingRight =false
+    }
+    }
+
+    if (leffEdge && !isGoingRight) {
+        for(let i=0; i< enemies.length; i++){
+            enemies[i] += width - 1
+            direction =1
+            isGoingRight = true
+        }
+    }
+
+    for(let i=0; i< enemies.length; i++){
+        enemies[i] += direction
+    }
+    draw()
+
+    if(squares[currentShooterIndex].classList.contains('enemy')) {
+       alert("Game Over! you lost")
+        clearInterval(enemiesId)
+    }
+}
+
+enemiesId = setInterval(moveEnemies, 300)
