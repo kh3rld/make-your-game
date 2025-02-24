@@ -7,7 +7,7 @@ body {
   overflow: hidden;
 }
 
-#game-container {
+#game-container, .grid {
   position: relative;
   width: 800px;
   height: 600px;
@@ -87,3 +87,5 @@ button {
 button:hover {
   background: #555;
 }
+
+
