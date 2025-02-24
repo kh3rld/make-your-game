@@ -8,3 +8,4 @@ for (let i = 0; i < width * width; i++) {
     const square = document.createElement('div')
     grid.appendChild(square)
 }
+

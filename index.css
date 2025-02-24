@@ -7,13 +7,21 @@ body {
   overflow: hidden;
 }
 
-#game-container, .grid {
+#game-container {
   position: relative;
-  width: 800px;
+  width: 600px;
   height: 600px;
   margin: 20px auto;
   background: #111;
   overflow: hidden;
+}
+
+.grid{
+  width: 600px;
+  height: 600px;
+  display: flex;
+  flex-wrap: wrap;
+
 }
 
 #scoreboard {
@@ -31,8 +39,8 @@ body {
 }
 
 .player {
-  width: 40px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   background: #0f0;
 }
 
@@ -89,3 +97,10 @@ button:hover {
 }
 
 
+.grid div {
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  border: 1px solid #555;
+
+}
