@@ -53,9 +53,10 @@ body {
 }
 
 .bullet {
-  width: 4px;
-  height: 12px;
+  width: 4px !important;
+  height: 12px  !important; 
   background: #ff0;
+
 }
 
 .player-bullet {
