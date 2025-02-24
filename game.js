@@ -1,5 +1,5 @@
 const grid = document.querySelector('.grid')
-const resultDisplay = document.querySelector('.score')
+const resultDisplay = document.querySelector('#score')
 const width = 15
 const height = 15
 const enemiesRemoved = []
@@ -7,6 +7,7 @@ let currentShooterIndex  = 202
 let enemiesId 
 let isGoingRight = true
 let direction =1
+let results = 0
 
 //create the grid for the game
 for (let i = 0; i < width * width; i++) {
@@ -93,10 +94,56 @@ function moveEnemies(){
     }
     draw()
 
+    //game over: lose
     if(squares[currentShooterIndex].classList.contains('enemy')) {
        alert("Game Over! you lost")
+        clearInterval(enemiesId)
+    }
+
+    //game over: win
+    if(enemiesRemoved.length === enemies.length){
+        alert("You win")
         clearInterval(enemiesId)
     }
 }
 
 enemiesId = setInterval(moveEnemies, 300)
+
+
+function shoot(e){
+    let BulletId
+    let currentBulletIndex = currentShooterIndex
+
+    function moveBullet(){
+        squares[currentBulletIndex].classList.remove('bullet')
+        currentBulletIndex -= width
+        squares[currentBulletIndex].classList.add('bullet')
+
+        if (squares[currentBulletIndex].classList.contains('enemy')){
+            squares[currentBulletIndex].classList.remove('enemy')
+            squares[currentBulletIndex].classList.remove('bullet')
+            squares[currentBulletIndex].classList.remove('boom')
+
+            setTimeout(() =>  squares[currentBulletIndex].classList.remove('boom'), 300 );
+            clearInterval(BulletId)
+
+            const enemyRemoved = enemies.indexOf(currentBulletIndex)
+            enemiesRemoved.push(enemyRemoved)
+            results++
+            resultDisplay.innerHTML = results
+        }
+
+    }
+
+    // switch(e.key) {
+    //     case 'ArrowUp':
+    //         BulletId = setInterval(moveBullet, 100)
+    //         break;
+    // }
+
+    if(e.key === 'ArrowUp'){
+      BulletId = setInterval(moveBullet, 100)
+    }
+}
+
+document.addEventListener('keydown', shoot)
