@@ -41,13 +41,15 @@ body {
 .player {
   width: 30px;
   height: 30px;
-  background: #0f0;
+  background: url('assets/ship.svg') no-repeat;
+  background-size: contain;
 }
 
 .enemy {
   width: 30px;
   height: 30px;
-  background: #f00;
+  background: url('assets/ufo.svg') no-repeat;
+  background-size: contain;
 }
 
 .bullet {
@@ -101,6 +103,6 @@ button:hover {
   width: 40px;
   height: 40px;
   box-sizing: border-box;
-  border: 1px solid #555;
+  /* border: 1px solid #555; */
 
 }
