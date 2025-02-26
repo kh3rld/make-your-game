@@ -5,12 +5,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Space Invaders</title>
-  <link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="./index.css">
 </head>
 
 <body>
+<div class="controls">
+  <button id="pause">Pause</button>
+  <button id="continue">Continue</button>
+  <button id="restart">Restart</button>
+</div>
   <div id="scoreboard">
-    <div id="score">Score: 0</div>
+    <div id="score">Score: <span id="score-span">0</span></div>
     <div id="timer">Time: 0s</div>
     <div id="lives">Lives: 3</div>
   </div>
@@ -20,11 +25,10 @@
   <div id="pause-menu">
     <div class="menu-content">
       <h2>Game Paused</h2>
-      <button id="continue">Continue</button>
-      <button id="restart">Restart</button>
     </div>
   </div>
   <script src="game.js"></script>
+  <script src="main.js"></script>
 </body>
 
 </html>

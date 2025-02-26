@@ -31,6 +31,7 @@ body {
   background: #222;
   margin: 0 auto;
   width: 760px;
+  border-radius: 5px;
 }
 
 .entity {
