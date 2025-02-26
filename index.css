@@ -9,11 +9,19 @@ body {
 
 #game-container {
   position: relative;
-  width: 800px;
+  width: 600px;
   height: 600px;
   margin: 20px auto;
   background: #111;
   overflow: hidden;
+}
+
+.grid{
+  width: 600px;
+  height: 600px;
+  display: flex;
+  flex-wrap: wrap;
+
 }
 
 #scoreboard {
@@ -23,6 +31,7 @@ body {
   background: #222;
   margin: 0 auto;
   width: 760px;
+  border-radius: 5px;
 }
 
 .entity {
@@ -31,21 +40,24 @@ body {
 }
 
 .player {
-  width: 40px;
-  height: 20px;
-  background: #0f0;
+  width: 30px;
+  height: 30px;
+  background: url('assets/ship.svg') no-repeat;
+  background-size: contain;
 }
 
 .enemy {
   width: 30px;
   height: 30px;
-  background: #f00;
+  background: url('assets/ufo.svg') no-repeat;
+  background-size: contain;
 }
 
 .bullet {
-  width: 4px;
-  height: 12px;
+  width: 4px !important;
+  height: 12px  !important; 
   background: #ff0;
+
 }
 
 .player-bullet {
@@ -86,4 +98,13 @@ button {
 
 button:hover {
   background: #555;
+}
+
+
+.grid div {
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  /* border: 1px solid #555; */
+
 }
