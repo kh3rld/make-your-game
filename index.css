@@ -108,3 +108,29 @@ button:hover {
   /* border: 1px solid #555; */
 
 }
+
+#notify {
+  display: none; /* Hidden by default */
+  background-color: #444;
+  padding: 10px;
+  position: fixed;
+  /*top: 50%;*/
+  left: 50%;
+  width: 30%;
+  transform: translateX(-50%);
+  max-width: 50%;
+  border-radius: 10px;
+  border: 2px solid #ffffff;
+  text-align: center;
+  font-weight: bold;
+  transition: opacity 0.5s ease-in-out;
+}
+
+#notify-msg {
+  padding: 10px;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+/*.green { background-color: green; color: white; border-color: darkgreen; }*/
+/*.red { background-color: red; color: white; border-color: darkred; }*/
