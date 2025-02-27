@@ -1,9 +1,10 @@
 body {
   margin: 0;
   padding: 0;
-  background: black;
+  background:url('/assets/back.jpg')no-repeat;
+  background-size: cover;
   color: white;
-  font-family: Arial, sans-serif;
+  font-family:"Press Start 2P", system-ui;
   overflow: hidden;
 }
 
@@ -14,6 +15,7 @@ body {
   margin: 20px auto;
   background: #111;
   overflow: hidden;
+  border: 1px solid rgb(46, 45, 45);
 }
 
 .grid{
@@ -24,20 +26,44 @@ body {
 
 }
 
+h1 {
+  color: #f25c05;
+  font-size: 3em;
+  font-weight: 400;
+  text-align: center;
+  margin: 2rem 0;
+}
+
 #scoreboard {
   display: flex;
   justify-content: space-between;
   padding: 10px 20px;
   background: #222;
   margin: 0 auto;
-  width: 760px;
+  width: 1000px;
   border-radius: 5px;
+  margin-top: 20px;
 }
 
 .grid div {
   width: 30px;
   height: 30px;
   position: relative; /* Required for bullet positioning */
+}
+
+.game-controls{
+  position: relative;
+  margin: 20px auto;
+  display: flex;
+  width: 600px;
+  flex-direction: row;
+  gap: 40px;
+}
+
+.instructions li{
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .entity {
@@ -78,7 +104,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(165, 74, 22, 0.8);
   display: none;
   justify-content: center;
   align-items: center;
@@ -94,18 +120,19 @@ body {
 button {
   display: block;
   width: 200px;
-  padding: 10px;
-  margin: 10px auto;
-  background: #444;
+  padding: 8px;
+  margin: 8px auto;
+  background: transparent;
+  border: 2px solid white;
   color: white;
-  border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  font-family:"Press Start 2P", system-ui;
 }
 
 button:hover {
-  background: #555;
+  background: #f25c05;
 }
 
 
@@ -116,3 +143,5 @@ button:hover {
   /* border: 1px solid #555; */
 
 }
+
+
