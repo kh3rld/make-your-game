@@ -34,6 +34,12 @@ body {
   border-radius: 5px;
 }
 
+.grid div {
+  width: 30px;
+  height: 30px;
+  position: relative; /* Required for bullet positioning */
+}
+
 .entity {
   position: absolute;
   transition: transform 0.016s linear;
@@ -54,14 +60,16 @@ body {
 }
 
 .bullet {
-  width: 4px !important;
-  height: 12px  !important; 
-  background: #ff0;
-
+  width: 30px;
+  height: 30px;
+  background: url('/assets/icons8-line-50.png') no-repeat;
+  background-size: contain;
 }
-
-.player-bullet {
-  background: #0ff;
+.boom {
+  width: 30px;
+  height: 30px;
+  background: url('/assets/icons8-laser-64.png') no-repeat;
+  background-size: contain;
 }
 
 #pause-menu {
