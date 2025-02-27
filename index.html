@@ -6,14 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Space Invaders</title>
   <link rel="stylesheet" href="./index.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 
 <body>
-<div class="controls">
-  <button id="pause">Pause</button>
-  <button id="continue">Continue</button>
-  <button id="restart">Restart</button>
-</div>
+
+  <h1>Space Invaders</h1>
   <div id="scoreboard">
     <div id="score">Score: <span id="score-span">0</span></div>
     <div id="timer">Time: 0s</div>
@@ -22,6 +22,23 @@
   <div id="game-container">
     <div class="grid"></div>
   </div>
+
+  <div class="game-controls">
+    <div class="controls">
+      <button id="pause">Pause</button>
+      <button id="continue">Continue</button>
+      <button id="restart">Restart</button>
+    </div>
+    <div class="instructions">
+      <ul class="control-list"> Controls
+        <li>Space: shoot</li>
+        <li>Arrow left ← :move left</li>
+        <li>Arrow right → :move right</li>
+        <li>P:pause or continue</li>
+      </ul>
+    </div>
+  </div>
+
   <div id="pause-menu">
     <div class="menu-content">
       <h2>Game Paused</h2>
