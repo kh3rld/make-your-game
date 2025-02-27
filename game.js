@@ -174,7 +174,7 @@ function shoot(e) {
         if (squares[currentBulletIndex].classList.contains('enemy')) {
             squares[currentBulletIndex].classList.remove('enemy');
             squares[currentBulletIndex].classList.remove('bullet');
-            squares[currentBulletIndex].classList.remove('boom');
+            squares[currentBulletIndex].classList.add('boom');
 
             setTimeout(() => squares[currentBulletIndex].classList.remove('boom'), 300);
             clearInterval(BulletId);
