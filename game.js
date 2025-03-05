@@ -162,6 +162,7 @@ requestAnimationFrame(moveEnemies);
 
 function shoot(e) {
     if (isPaused || gameOver) return;
+    if (e.keyCode !== 32) return;
     let BulletId;
     let currentBulletIndex = currentShooterIndex;
 
@@ -186,7 +187,7 @@ function shoot(e) {
         }
     }
 
-    if (e.key === 'ArrowUp') {
+    if (e.keyCode === 32) {
         BulletId = setInterval(moveBullet, 100);
     }
 }
