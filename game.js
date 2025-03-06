@@ -91,7 +91,9 @@ function moveEnemies(timestamp) {
         for (let i = 0; i < enemies.length; i++) {
             if (enemies[i] >= width * (height - 1)) { // Check if enemy is in the last row
                 gameOver = true;
-                alert("Game Over! The enemies reached the bottom.");
+                // 1. reduce enemy life
+                // 2. reset enemies position
+                showNotification("Game Over! The enemies reached the bottom.");
                 return; // Stop further execution
             }
         }
@@ -121,14 +123,14 @@ function moveEnemies(timestamp) {
         // Game over: lose if player is hit by an enemy
         if (squares[currentShooterIndex].classList.contains('enemy')) {
             gameOver = true;
-            alert("Game Over! You lost");
+            showNotification("Game Over! You lost");
             return;
         }
 
         // Game over: win if all enemies are removed
         if (enemiesRemoved.length === enemies.length) {
             gameOver = true;
-            alert("You win");
+            showNotification("You win");
             return;
         }
 
@@ -142,7 +144,7 @@ function moveEnemies(timestamp) {
         }
         if (allEnemiesOffScreen) {
             gameOver = true;
-            alert("Game Over! The enemies escaped.");
+            showNotification("Game Over! The enemies escaped.");
             return;
         }
     }
@@ -187,10 +189,28 @@ function shoot(e) {
         }
     }
 
-    if (e.keyCode === 32) {
-        BulletId = setInterval(moveBullet, 100);
+    if(!isPaused || !gameOver){
+        if (e.keyCode === 32) {
+            BulletId = setInterval(moveBullet, 100);
+        }
     }
 }
 
 document.addEventListener('keydown', shoot);
 
+function showNotification(message) {
+    let notifyDiv = document.getElementById("notify");
+    let notifyMsg = document.getElementById("notify-msg");
+
+    notifyMsg.textContent = message;
+    notifyDiv.className = "";
+    notifyDiv.style.display = "block";
+    notifyDiv.style.opacity = "1";
+
+    setTimeout(() => {
+        notifyDiv.style.opacity = "0";
+        setTimeout(() => {
+            notifyDiv.style.display = "none";
+        }, 500);
+    }, 3000);
+}

@@ -33,3 +33,5 @@ restartButton.addEventListener('click', () => {
     timerDisplay.textContent = '00:00';
     requestAnimationFrame(moveEnemies);
 });
+
+const pressPlay = document.getElementById('press-play');
