@@ -6,7 +6,7 @@ const restartButton = document.querySelector('#restart');
 const timerDisplay = document.querySelector('#timer');
 const lifeCount = document.getElementById("lives-span");
 const width = 15;
-const enemySpeed = 300; // Time in milliseconds between enemy movements
+const enemySpeed = 900; // Time in milliseconds between enemy movements
 const height = 15;
 
 let enemiesRemoved = [];
@@ -108,7 +108,6 @@ function moveEnemies(timestamp) {
         // Check if any enemy has reached the bottom
         for (let i = 0; i < enemies.length; i++) {
             if (enemies[i] >= width * (height - 1)) { // Check if enemy is in the last row
-                // gameOver = true;
                 showNotification("enemies repositioning.");
                 return; // Stop further execution
             }
@@ -180,7 +179,7 @@ let bullets = []; // Array to track active bullets
 function shoot(e) {
     if (isPaused || gameOver) return;
 
-    if (e.key === 'ArrowUp') {
+    if (e.keyCode === 32) {
         const bulletIndex = currentShooterIndex - width; // Start bullet above shooter
         squares[bulletIndex].classList.add('bullet');
         bullets.push({ index: bulletIndex, intervalId: null }); // Track bullet

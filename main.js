@@ -51,6 +51,7 @@ function looseLife(){
 
 function startGame() {
     // Reset game state
+    console.log(">>>>>starting ,,,")
     enemiesRemoved.length = 0;
     results = 0;
     resultDisplay.innerHTML = results;
@@ -71,13 +72,13 @@ function startGame() {
     requestAnimationFrame(moveEnemies);
 }
 
-function resetEnemies(){
-    // if enemies reach the bottom, reduce one life and take them back to the top again
+const startBtn = document.getElementById('start-button');
+startBtn.addEventListener('click', () => {
+    startGame();
+    startBtn.style.display = "none";
+});
 
-}
-
-// Start the game when the DOM is loaded, maybe add a play button to restrict game from automatically
-document.addEventListener('DOMContentLoaded', startGame);
-
-// Restart the game when the restart button is clicked
-restartButton.addEventListener('click', startGame);
+// Restart the game
+restartButton.addEventListener('click', () => {
+    startGame();
+});

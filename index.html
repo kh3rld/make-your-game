@@ -5,31 +5,57 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Space Invaders</title>
+  <!--favicon-->
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/assets/favicon/site.webmanifest">
   <link rel="stylesheet" href="./index.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 
 <body>
+  <h1>Space Invaders</h1>
   <div id="notify">
     <p id="notify-msg"><p>
   </div>
-<div class="controls">
-  <button id="pause">Pause</button>
-  <button id="continue">Continue</button>
-  <button id="restart">Restart</button>
-</div>
+
+  <button id="start-button">Start</button>
+
+  <div class="game-controls">
+    <div class="controls">
+      <button id="pause">Pause</button>
+      <button id="continue">Continue</button>
+      <button id="restart">Restart</button>
+    </div>
+    <div class="instructions">
+      <ul class="control-list"> Controls
+        <li>Space: shoot</li>
+        <li>Arrow left ← :move left</li>
+        <li>Arrow right → :move right</li>
+        <li>P:pause or continue</li>
+      </ul>
+    </div>
+  </div>
+
   <div id="scoreboard">
     <div id="score">Score: <span id="score-span">0</span></div>
     <div id="timer">Time: <span id="timer-span">00m:00s</span></div>
     <div id="lives">Lives: <span id="lives-span"></span></div>
   </div>
+
   <div id="game-container">
     <div class="grid"></div>
   </div>
+
   <div id="pause-menu">
     <div class="menu-content">
       <h2>Game Paused</h2>
     </div>
   </div>
+
   <script src="game.js"></script>
   <script src="main.js"></script>
 </body>
