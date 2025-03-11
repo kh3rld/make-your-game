@@ -54,7 +54,6 @@ function gameLoop(currentTime) {
     
     if (deltaTime < FRAME_INTERVAL) return;
     lastFrameTime = currentTime - (deltaTime % FRAME_INTERVAL);
-
     switch(gameState) {
         case GAME_STATES.PLAYING:
             updateGame(currentTime);
@@ -65,8 +64,11 @@ function gameLoop(currentTime) {
             handleLifeLostState();
             break;
     }
+   
     render();
+    
 }
+
 
 function updateGame(currentTime) {
     // Update timer
@@ -293,4 +295,4 @@ function resetGame() {
 }
 
 // Start the game loop
-gameLoop(0);
+requestAnimationFrame(gameLoop);

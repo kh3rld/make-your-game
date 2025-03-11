@@ -7,6 +7,7 @@ const modals = {
     lifeLost: document.getElementById('lifeLostModal')
 };
 
+
 // Event Listeners
 document.addEventListener('keydown', (e) => {
     if (gameState === GAME_STATES.PLAYING) {
@@ -69,6 +70,7 @@ function togglePause() {
     }
     setGameState(gameState);
 }
+
 
 document.addEventListener('keydown', (e) => {
     if (e.key.toLowerCase() === 'p') {
