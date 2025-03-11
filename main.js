@@ -35,3 +35,8 @@ restartButton.addEventListener('click', () => {
 });
 
 const pressPlay = document.getElementById('press-play');
+pressPlay.addEventListener('click', () => {
+    pressPlay.style.display = 'none';
+    console.log(pressPlay.style.display,">>>");
+    Start();
+})

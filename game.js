@@ -41,7 +41,6 @@ function draw() {
         }
     }
 }
-draw();
 
 squares[currentShooterIndex].classList.add('player');
 
@@ -54,6 +53,7 @@ function remove() {
 
 // Moving the player(shooter) left and right
 function moveShooter(e) {
+    if (!hasStarted) return;
     if (isPaused || gameOver) return;
     squares[currentShooterIndex].classList.remove('player');
     switch (e.key) {
@@ -124,12 +124,14 @@ function moveEnemies(timestamp) {
         if (squares[currentShooterIndex].classList.contains('enemy')) {
             gameOver = true;
             showNotification("Game Over! You lost");
+            removeBullets();
             return;
         }
 
         // Game over: win if all enemies are removed
         if (enemiesRemoved.length === enemies.length) {
             gameOver = true;
+            removeBullets();
             showNotification("You win");
             return;
         }
@@ -145,6 +147,7 @@ function moveEnemies(timestamp) {
         if (allEnemiesOffScreen) {
             gameOver = true;
             showNotification("Game Over! The enemies escaped.");
+            removeBullets();
             return;
         }
     }
@@ -159,10 +162,10 @@ function updateTimer(time) {
     timerDisplay.textContent = `${minutes}:${seconds}`;
 }
 
-// Start the game loop
-requestAnimationFrame(moveEnemies);
+
 
 function shoot(e) {
+    if (!hasStarted) return;
     if (isPaused || gameOver) return;
     if (e.keyCode !== 32) return;
     let BulletId;
@@ -170,8 +173,13 @@ function shoot(e) {
 
     function moveBullet() {
         if (gameOver) return;
+
         squares[currentBulletIndex].classList.remove('bullet');
         currentBulletIndex -= width;
+        if (currentBulletIndex < 0) {
+            clearInterval(BulletId); // Stop the bullet movement
+            return;
+        }
         squares[currentBulletIndex].classList.add('bullet');
 
         if (squares[currentBulletIndex].classList.contains('enemy')) {
@@ -214,3 +222,19 @@ function showNotification(message) {
         }, 500);
     }, 3000);
 }
+
+function removeBullets() {
+    for (let i = 0; i < squares.length; i++) {
+        squares[i].classList.remove('bullet');
+    }
+}
+
+let hasStarted = false;
+function Start(){
+    hasStarted = true;
+    // Start the game loop
+    requestAnimationFrame(moveEnemies);
+    // draw()
+}
+
+// document.addEventListener('DOMContentLoaded', Start);
