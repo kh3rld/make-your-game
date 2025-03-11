@@ -3,248 +3,294 @@ const resultDisplay = document.querySelector('#score-span');
 const pauseButton = document.querySelector('#pause');
 const continueButton = document.querySelector('#continue');
 const restartButton = document.querySelector('#restart');
-const timerDisplay = document.querySelector('#timer');
+const timerDisplay = document.querySelector('#timer-span');
 const lifeCount = document.getElementById("lives-span");
 const width = 15;
-const enemySpeed = 900; // Time in milliseconds between enemy movements
 const height = 15;
+const enemySpeed = 1000;
 
+// Game State Management
+const GAME_STATES = {
+    START: 'start',
+    PLAYING: 'playing',
+    PAUSED: 'paused',
+    GAME_OVER: 'game_over',
+    LIFE_LOST: 'life_lost',
+    WON: 'won'
+};
+
+let gameState = GAME_STATES.START;
+let lastFrameTime = 0;
+const FPS = 60;
+const FRAME_INTERVAL = 1000 / FPS;
+
+// Game Variables
+let enemies = [];
+const initialEnemies = [0,1,2,3,4,5,6,7,8,9,10,15,16,17,18,19,20,21,22,23,24,25,30,31,32,33,34,35,36,37,38,39,40];
 let enemiesRemoved = [];
 let currentShooterIndex = 202;
+let bullets = [];
 let isGoingRight = true;
 let direction = 1;
-let results = 0;
-let isPaused = false;
-let gameOver = false;
-let lastTime = 0;
-let startTime = 0; // To track the start time of the game
-let elapsedTime = 0; // To track the elapsed time
 let lives = 3;
+let results = 0;
+let startTime = 0;
+let lastMoveTime = 0;
+let isMovingDown = false;
 
 
-for (let i = 0; i < width * width; i++) {
+// Initialize Grid
+const squares = [];
+for (let i = 0; i < width * height; i++) {
     const square = document.createElement('div');
     grid.appendChild(square);
+    squares.push(square);
 }
 
-// Create an array from the square
-const squares = Array.from(document.querySelectorAll('.grid div'));
+// Main Game Loop
+function gameLoop(currentTime) {
+    requestAnimationFrame(gameLoop);
+    const deltaTime = currentTime - lastFrameTime;
+    
+    if (deltaTime < FRAME_INTERVAL) return;
+    lastFrameTime = currentTime - (deltaTime % FRAME_INTERVAL);
 
-// Create an array for the enemies
-const enemies = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-    30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
-];
+    switch(gameState) {
+        case GAME_STATES.PLAYING:
+            updateGame(currentTime);
+            checkCollisions();
+            checkWinCondition();
+            break;
+        case GAME_STATES.LIFE_LOST:
+            handleLifeLostState();
+            break;
+    }
+    render();
+}
 
-// Draw the enemy ships
-function draw() {
-    for (let i = 0; i < enemies.length; i++) {
-        if (!enemiesRemoved.includes(i)) {
-            squares[enemies[i]].classList.add('enemy');
+function updateGame(currentTime) {
+    // Update timer
+    if (!startTime) startTime = currentTime;
+    const elapsed = currentTime - startTime;
+    updateTimer(elapsed);
+
+    // Enemy movement
+    if (currentTime - lastMoveTime >= enemySpeed) {
+        moveEnemies();
+        lastMoveTime = currentTime;
+    }
+
+    // Update bullets
+    bullets.forEach((bullet, index) => {
+        bullet.position -= width;
+        if (bullet.position < 0) bullets.splice(index, 1);
+    });
+}
+
+function moveEnemies() {
+    const activeEnemies = enemies.filter((_, i) => !enemiesRemoved.includes(i));
+    
+    if (isMovingDown) {
+        // Vertical movement phase
+        enemies = enemies.map(pos => pos + width);
+        isMovingDown = false;
+        direction *= -1; // Reverse horizontal direction after moving down
+        return;
+    }
+
+    // Edge detection for horizontal movement
+    let leftEdge = false;
+    let rightEdge = false;
+    
+    if (activeEnemies.length > 0) {
+        const positions = activeEnemies.map(pos => pos % width);
+        leftEdge = Math.min(...positions) <= 0;
+        rightEdge = Math.max(...positions) >= width - 1;
+    }
+
+    // Check if need to move down
+    if ((direction === 1 && rightEdge) || (direction === -1 && leftEdge)) {
+        isMovingDown = true;
+        isGoingRight = direction === 1;
+        return; 
+    }
+
+    // Regular horizontal movement
+    enemies = enemies.map(pos => pos + direction);
+
+    // Boundary check (safety)
+    enemies = enemies.map(pos => {
+        const col = pos % width;
+        if (col < 0) return pos + 1;
+        if (col >= width) return pos - 1;
+        return pos;
+    });
+}
+function checkCollisions() {
+    // Bullet-enemy collisions
+    bullets.forEach((bullet, bulletIndex) => {
+        enemies.forEach((enemyPos, enemyIndex) => {
+            if (bullet.position === enemyPos && !enemiesRemoved.includes(enemyIndex)) {
+                handleEnemyHit(bulletIndex, enemyIndex);
+            }
+        });
+    });
+
+    // Player-enemy collision
+    if (enemies.includes(currentShooterIndex)) {
+        handleLifeLost();
+    }
+}
+
+function handleEnemyHit(bulletIndex, enemyIndex) {
+    bullets.splice(bulletIndex, 1);
+    enemiesRemoved.push(enemyIndex);
+    results++;
+    resultDisplay.textContent = results;
+
+
+     // Add boom effect
+     const enemyPos = enemies[enemyIndex];
+     squares[enemyPos].classList.add('boom');
+     setTimeout(() => {
+         squares[enemyPos].classList.remove('boom');
+     }, 300);
+}
+
+function handleLifeLost() {
+    lives--;
+    lifeCount.textContent = lives;
+    
+    if (lives <= 0) {
+        setGameState(GAME_STATES.GAME_OVER);
+    } else {
+        setGameState(GAME_STATES.LIFE_LOST);
+    }
+}
+
+function handleLifeLostState() {
+    // Reset positions but keep score
+    currentShooterIndex = 202;
+    enemies = [...initialEnemies];
+    direction = 1;
+    isGoingRight = true;
+}
+
+function checkWinCondition() {
+    if (enemiesRemoved.length === enemies.length) {
+        setGameState(GAME_STATES.WON);
+    }
+}
+
+function render() {
+    // Clear all
+    squares.forEach(square => {
+        square.classList.remove('enemy', 'player', 'bullet');
+    });
+
+    // Draw active enemies
+    enemies.forEach((pos, index) => {
+        if (!enemiesRemoved.includes(index)) {
+            const col = pos % width;
+            const row = Math.floor(pos / width);
+            
+            if (row < height && col < width) {
+                squares[pos].classList.add('enemy');
+            }
         }
-    }
-}
-draw();
+    });
 
-squares[currentShooterIndex].classList.add('player');
-
-// Function to remove the enemies
-function remove() {
-    for (let i = 0; i < enemies.length; i++) {
-        squares[enemies[i]].classList.remove('enemy');
-    }
-}
-
-// Moving the player(shooter) left and right
-function moveShooter(e) {
-    if (isPaused || gameOver) return;
-    squares[currentShooterIndex].classList.remove('player');
-    switch (e.key) {
-        case 'ArrowLeft':
-            if (currentShooterIndex % width !== 0) currentShooterIndex -= 1;
-            break;
-        case 'ArrowRight':
-            if (currentShooterIndex % width < width - 1) currentShooterIndex += 1;
-            break;
-    }
+    // Draw player
     squares[currentShooterIndex].classList.add('player');
-}
-document.addEventListener('keydown', moveShooter);
 
-function updateTimer(time) {
-    const minutes = Math.floor(time / 60000).toString().padStart(2, '0');
-    const seconds = Math.floor((time % 60000) / 1000).toString().padStart(2, '0');
+    // Draw bullets
+    bullets.forEach(bullet => {
+        if (bullet.position >= 0 && bullet.position < width * height) {
+            squares[bullet.position].classList.add('bullet');
+        }
+    });
+}
+
+function updateTimer(ms) {
+    const minutes = Math.floor(ms / 60000).toString().padStart(2, '0');
+    const seconds = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
     timerDisplay.textContent = `${minutes}:${seconds}`;
 }
 
-// Function to move the enemies
-function moveEnemies(timestamp) {
-    if (isPaused){
-        requestAnimationFrame(removeBullets);
-        return;
+pauseButton.addEventListener('click', () => {
+    if (gameState === GAME_STATES.PLAYING) {
+        setGameState(GAME_STATES.PAUSED);
     }
+});
 
-    if(gameOver){
-        requestAnimationFrame(removeBullets);
-        lifeCount.innerText = Number(0).toString()
-        return;
+continueButton.addEventListener('click', () => {
+    if (gameState === GAME_STATES.PAUSED) {
+        setGameState(GAME_STATES.PLAYING);
     }
+});
 
-    if (!startTime) startTime = timestamp; // Initialize start time
-    if (!lastTime) lastTime = timestamp;
-    const deltaTime = timestamp - lastTime;
+// State Management
+// Update the setGameState function
+function setGameState(newState) {
+    gameState = newState;
+    const overlay = document.getElementById('overlay');
+    const shouldHideOverlay = newState === GAME_STATES.PLAYING;
+    
+    overlay.classList.toggle('hidden', shouldHideOverlay);
+    document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
 
-    // Update the timer
-    elapsedTime = timestamp - startTime;
-    updateTimer(elapsedTime);
-    if (deltaTime >= enemySpeed) {
-        lastTime = timestamp;
-
-        // Check all remaining enemies to find the leftmost and rightmost positions
-        let leftEdge = false;
-        let rightEdge = false;
-        
-        // Find active enemies (those not in enemiesRemoved)
-        const activeEnemies = enemies.filter((_, index) => !enemiesRemoved.includes(index));
-        
-        if (activeEnemies.length > 0) {
-            // Check if any active enemy is at the left edge
-            leftEdge = activeEnemies.some(position => position % width === 0);
-            
-            // Check if any active enemy is at the right edge
-            rightEdge = activeEnemies.some(position => position % width === width - 1);
-        }
-        
-        // requestAnimationFrame(remove);
-        remove()
-
-        // Check if any enemy has reached the bottom
-        for (let i = 0; i < enemies.length; i++) {
-            if (enemies[i] >= width * (height - 1)) { // Check if enemy is in the last row
-                showNotification("enemies repositioning.");
-                return; // Stop further execution
-            }
-        }
-
-        // Move enemies left or right and down
-        if (rightEdge && isGoingRight) {
-            for (let i = 0; i < enemies.length; i++) {
-                enemies[i] += width + 1;
-                direction = -1;
-                isGoingRight = false;
-            }
-        }
-
-        if (leftEdge && !isGoingRight) {
-            for (let i = 0; i < enemies.length; i++) {
-                enemies[i] += width - 1;
-                direction = 1;
-                isGoingRight = true;
-            }
-        }
-
-        for (let i = 0; i < enemies.length; i++) {
-            enemies[i] += direction;
-            if(squares[enemies[i]].classList.contains('player')){
-                // enemy has reached the player so we need to reset their position back to the top while maintaining everything else
-                looseLife();
-            }
-        }
-        draw();
-
-        // reduce one life if a player touches the enemy
-        if (squares[currentShooterIndex].classList.contains('enemy')) {
-            looseLife();
-            // showNotification("Game Over! You lost",'red');
-            return;
-        }
-
-        // Game over: win if all enemies are removed
-        if (enemiesRemoved.length === enemies.length) {
-            gameOver = true;
-            showNotification("You win", 'green');
-            return;
-        }
-
-        // Game over: lose if enemies disappear without being shot
-        let allEnemiesOffScreen = true;
-        for (let i = 0; i < enemies.length; i++) {
-            if (enemies[i] < width * height) { // Check if any enemy is still on the grid
-                allEnemiesOffScreen = false;
-                break;
-            }
-        }
-        if (allEnemiesOffScreen) {
-            gameOver = true;
-            showNotification("Game Over! The enemies escaped.");
-            return;
-        }
+    switch(newState) {
+        case GAME_STATES.PAUSED:
+            document.getElementById('pauseModal').classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            break;
+        case GAME_STATES.GAME_OVER:
+            document.getElementById('finalScore').textContent = results;
+            document.getElementById('gameOverModal').classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            break;
+        case GAME_STATES.WON:
+            document.getElementById('winScore').textContent = results;
+            document.getElementById('winModal').classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            break;
+        case GAME_STATES.LIFE_LOST:
+            document.getElementById('remainingLives').textContent = lives;
+            document.getElementById('lifeLostModal').classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            break;
+        case GAME_STATES.PLAYING:
+            overlay.classList.add('hidden');
+            document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+            break;
     }
-
-    requestAnimationFrame(moveEnemies);
+}
+// Initialize Game
+function resetGame() {
+    enemies = [...initialEnemies];
+    enemiesRemoved = [];
+    results = 0;
+    lives = 3;
+    startTime = 0;
+    bullets = [];
+    currentShooterIndex = 202;
+    direction = 1;
+    isGoingRight = true;
+    
+    // Clear grid
+    squares.forEach(square => {
+        square.classList.remove('enemy', 'player', 'bullet', 'boom');
+    });
+    
+    // Initial setup
+    enemies.forEach(pos => squares[pos].classList.add('enemy'));
+    squares[currentShooterIndex].classList.add('player');
+    
+    // Reset UI
+    resultDisplay.textContent = '0';
+    lifeCount.textContent = '3';
+    timerDisplay.textContent = '00:00';
 }
 
 // Start the game loop
-requestAnimationFrame(moveEnemies);
-
-let bullets = []; // Array to track active bullets
-
-function shoot(e) {
-    if (isPaused || gameOver) return;
-
-    if (e.keyCode === 32) {
-        const bulletIndex = currentShooterIndex - width; // Start bullet above shooter
-        squares[bulletIndex].classList.add('bullet');
-        bullets.push({ index: bulletIndex, intervalId: null }); // Track bullet
-
-        moveBullet(bullets.length - 1); // Start moving the bullet
-    }
-}
-
-function moveBullet(bulletId) {
-    const bullet = bullets[bulletId];
-    if (!bullet) return;
-
-    bullet.intervalId = setInterval(() => {
-        const currentIndex = bullet.index;
-
-        // Remove bullet from current position
-        squares[currentIndex].classList.remove('bullet');
-
-        // Move bullet upward
-        const newIndex = currentIndex - width;
-        bullet.index = newIndex;
-
-        // Check if bullet goes off-screen
-        if (newIndex < 0) {
-            clearInterval(bullet.intervalId);
-            bullets.splice(bulletId, 1); // Remove bullet from tracking
-            return;
-        }
-
-        // Check if bullet hits an enemy
-        if (squares[newIndex].classList.contains('enemy')) {
-            clearInterval(bullet.intervalId);
-            bullets.splice(bulletId, 1); // Remove bullet from tracking
-
-            squares[newIndex].classList.remove('enemy');
-            squares[newIndex].classList.add('boom'); // Add explosion effect
-
-            setTimeout(() => squares[newIndex].classList.remove('boom'), 300); // Remove explosion after 300ms
-
-            const enemyRemoved = enemies.indexOf(newIndex);
-            if (enemyRemoved !== -1) {
-                enemiesRemoved.push(enemyRemoved);
-                results++;
-                resultDisplay.innerHTML = results.toString();
-            }
-            return;
-        }
-
-        squares[newIndex].classList.add('bullet');
-    }, 100);
-}
-if(!isPaused && !gameOver){
-    // this prevents shooting while game is over or paused
-    document.addEventListener('keydown', shoot);
-}
+gameLoop(0);

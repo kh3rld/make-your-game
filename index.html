@@ -17,13 +17,29 @@
 </head>
 
 <body>
-  <div id="overlay">
+  <div id="overlay" class="hidden"></div>
   <h1>Space Invaders</h1>
-  <div id="notify">
-    <p id="notify-msg"><p>
+  <div id="startModal" class="modal">
+    <h2>Welcome To Space Invaders</h2>
+    <button id="start-button">Start Game</button>
+    <div class="instructions">
+      <h3>Controls:</h3>
+      <p>← → : Move</p>
+      <p>Space : Shoot</p>
+      <p>P : Pausetinue/Con</p>
+    </div>
+  </div>
+  <!-- <button id="start-button">Start</button> -->
+
+  <div id="scoreboard">
+    <div id="score">Score: <span id="score-span">0</span></div>
+    <div id="timer">Time: <span id="timer-span">00m:00s</span></div>
+    <div id="lives">Lives: <span id="lives-span"></span></div>
   </div>
 
-  <button id="start-button">Start</button>
+  <div id="game-container">
+    <div class="grid"></div>
+  </div>
 
   <div class="game-controls">
     <div class="controls">
@@ -41,22 +57,30 @@
     </div>
   </div>
 
-  <div id="scoreboard">
-    <div id="score">Score: <span id="score-span">0</span></div>
-    <div id="timer">Time: <span id="timer-span">00m:00s</span></div>
-    <div id="lives">Lives: <span id="lives-span"></span></div>
+  <!--Game state modals-->
+  <div id="pauseModal" class="modal hidden">
+    <h2>Game Paused</h2>
   </div>
 
-  <div id="game-container">
-    <div class="grid"></div>
+  <div id="gameOverModal" class="modal hidden">
+    <h2>Game Over!</h2>
+    <p>Score: <span id="finalScore">0</span></p>
+    <button id="restartGameOver">Play Again</button>
   </div>
 
-  <div id="pause-menu">
-    <div class="menu-content">
-      <h2>Game Paused</h2>
-    </div>
+  <div id="winModal" class="modal hidden">
+    <h2>You Win! 🎉</h2>
+    <p>Score: <span id="winScore">0</span></p>
+    <button id="restartWin">Play Again</button>
   </div>
-</div>
+
+  <div id="lifeLostModal" class="modal hidden">
+    <h2>Life Lost! 💔</h2>
+    <p>Lives Remaining: <span id="remainingLives">3</span></p>
+    <button id="continueLife">Continue</button>
+    <button id="restartLife">Restart</button>
+  </div>
+
   <script src="game.js"></script>
   <script src="main.js"></script>
 </body>
