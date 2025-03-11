@@ -23,13 +23,6 @@ function showNotification(message) {
     notifyDiv.className = "";
     notifyDiv.style.display = "block";
     notifyDiv.style.opacity = "1";
-
-    setTimeout(() => {
-        notifyDiv.style.opacity = "0";
-        setTimeout(() => {
-            notifyDiv.style.display = "none";
-        }, 500);
-    }, 3000);
 }
 
 function removeBullets() {
@@ -41,12 +34,16 @@ function removeBullets() {
 }
 
 function looseLife(){
-    if (lives <= 0){
-        lifeCount.innerText = lives.toString();
-        gameOver=true;
-    }
-    lives--
+    if (lives <= 0) return;
+    
+    lives-- 
+    showNotification("You lost a life");
     lifeCount.innerText = lives.toString();
+   
+    if (lives <= 0) {
+        gameOver = true;
+        showNotification("Game Over! You lost.");
+    }
 }
 
 function startGame() {
