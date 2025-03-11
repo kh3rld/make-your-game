@@ -100,8 +100,21 @@ function moveEnemies(timestamp) {
     if (deltaTime >= enemySpeed) {
         lastTime = timestamp;
 
-        const leftEdge = enemies[0] % width === 0;
-        const rightEdge = enemies[enemies.length - 1] % width === width - 1;
+        // Check all remaining enemies to find the leftmost and rightmost positions
+        let leftEdge = false;
+        let rightEdge = false;
+        
+        // Find active enemies (those not in enemiesRemoved)
+        const activeEnemies = enemies.filter((_, index) => !enemiesRemoved.includes(index));
+        
+        if (activeEnemies.length > 0) {
+            // Check if any active enemy is at the left edge
+            leftEdge = activeEnemies.some(position => position % width === 0);
+            
+            // Check if any active enemy is at the right edge
+            rightEdge = activeEnemies.some(position => position % width === width - 1);
+        }
+        
         // requestAnimationFrame(remove);
         remove()
 
