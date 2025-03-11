@@ -1,8 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  background:url('/assets/back.jpg')no-repeat;
-  background-size: cover;
+  background: #111;
   color: white;
   font-family:"Press Start 2P", system-ui;
   overflow: hidden;
@@ -13,9 +12,11 @@ body {
   width: 600px;
   height: 600px;
   margin: 20px auto;
-  background: #111;
+  background: url('/assets/back2.jpg')no-repeat;
+  background-size:cover ;
   overflow: hidden;
   border: 1px solid rgb(46, 45, 45);
+  border-bottom: 4px solid white;
 }
 
 .grid{
@@ -27,7 +28,7 @@ body {
 }
 
 h1 {
-  color: #f25c05;
+  color: white;
   font-size: 3em;
   font-weight: 400;
   text-align: center;
@@ -71,29 +72,30 @@ h1 {
 }
 
 .player {
-  width: 30px;
-  height: 30px;
-  background: url('assets/ship.svg') no-repeat;
+  width: 40px;
+  height: 40px;
+  background: url('/assets/Screenshot_from_2025-03-11_15-52-07-removebg-preview.png') no-repeat;
   background-size: contain;
 }
 
 .enemy {
   width: 30px;
   height: 30px;
-  background: url('assets/ufo.svg') no-repeat;
+  background: url('/assets/enemy2.svg') no-repeat;
   background-size: contain;
 }
 
 .bullet {
   width: 30px;
   height: 30px;
-  background: url('/assets/icons8-line-50.png') no-repeat;
+  background: url('/assets/line-s-svgrepo-com.svg') no-repeat;
   background-size: contain;
+  align-items: center;
 }
 .boom {
   width: 30px;
   height: 30px;
-  background: url('/assets/icons8-laser-64.png') no-repeat;
+  background: url('/assets/laser-burst-svgrepo-com.svg') no-repeat;
   background-size: contain;
 }
 
@@ -131,7 +133,8 @@ button {
 }
 
 button:hover {
-  background: #f25c05;
+  background: white;
+  color: #111;
 }
 
 
@@ -148,7 +151,7 @@ button:hover {
   background-color: #292929;
   padding: 10px;
   position: fixed;
-  /*top: 50%;*/
+  top: 50%;
   left: 50%;
   width: 30%;
   transform: translateX(-50%) translateY(-50%);
@@ -165,6 +168,7 @@ button:hover {
   font-size: 16px;
   color: #ffffff;
 }
+
 
 /*.green { background-color: green; color: white; border-color: darkgreen; }*/
 /*.red { background-color: red; color: white; border-color: darkred; }*/
