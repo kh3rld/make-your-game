@@ -1,0 +1,306 @@
+Index: main.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>let initialEnemies = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,\n    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,\n    30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40\n];\n// Pause the game\npauseButton.addEventListener('click', () => {\n    isPaused = true;\n});\n\n// Continue the game\ncontinueButton.addEventListener('click', () => {\n    if (isPaused) {\n        isPaused = false;\n        requestAnimationFrame(moveEnemies);\n    }\n});\n\n// Restart the game\nrestartButton.addEventListener('click', () => {\n    isPaused = false;\n    gameOver = false;\n    enemiesRemoved.length = 0;\n    results = 0;\n    resultDisplay.innerHTML = results;\n    currentShooterIndex = 202;\n    squares.forEach(square => square.classList.remove('enemy', 'player', 'bullet', 'boom'));\n    enemies.length = 0;\n    initialEnemies.forEach(index => enemies.push(index));\n    draw();\n    squares[currentShooterIndex].classList.add('player');\n    startTime = 0; // Reset the timer\n    elapsedTime = 0;\n    timerDisplay.textContent = '00:00';\n    requestAnimationFrame(moveEnemies);\n});
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.js b/main.js
+--- a/main.js	
++++ b/main.js	
+@@ -32,4 +32,68 @@
+     elapsedTime = 0;
+     timerDisplay.textContent = '00:00';
+     requestAnimationFrame(moveEnemies);
+-});
+\ No newline at end of file
++});
++
++function showNotification(message) {
++    let notifyDiv = document.getElementById("notify");
++    let notifyMsg = document.getElementById("notify-msg");
++
++    notifyMsg.textContent = message;
++    notifyDiv.className = "";
++    notifyDiv.style.display = "block";
++    notifyDiv.style.opacity = "1";
++
++    setTimeout(() => {
++        notifyDiv.style.opacity = "0";
++        setTimeout(() => {
++            notifyDiv.style.display = "none";
++        }, 500);
++    }, 3000);
++}
++
++function removeBullets() {
++    for (let i = bullets.length - 1; i >= 0; i--) {
++        const bulletIndex = bullets[i];
++        squares[bulletIndex].classList.remove('bullet');
++        bullets.splice(i, 1); // Remove the bullet from the tracking array
++    }
++}
++
++function looseLife(){
++    if (lives <= 0){
++        lifeCount.innerText = lives.toString();
++        gameOver=true;
++        return;
++    }
++    lives--
++    lifeCount.innerText = lives.toString();
++}
++
++function startGame() {
++    // Reset game state
++    enemiesRemoved.length = 0;
++    results = 0;
++    resultDisplay.innerHTML = results;
++    currentShooterIndex = 202; // Reset player position
++    squares.forEach(square => square.classList.remove('enemy', 'player', 'bullet', 'boom')); // Clear the grid
++    enemies.length = 0;
++    initialEnemies.forEach(index => enemies.push(index)); // Reset enemies
++    draw(); // Redraw enemies
++    squares[currentShooterIndex].classList.add('player'); // Add player
++    startTime = 0; // Reset the timer
++    elapsedTime = 0;
++    timerDisplay.textContent = '00:00'; // Reset timer display
++    lifeCount.innerText = Number(3).toString(10); // Reset lives
++
++    // Start the game
++    gameOver = false;
++    isPaused = false;
++    requestAnimationFrame(moveEnemies);
++}
++
++// Start the game when the DOM is loaded, maybe add a play button to restrict game from automatically
++document.addEventListener('DOMContentLoaded', startGame);
++
++// Restart the game when the restart button is clicked
++restartButton.addEventListener('click', startGame);
++
+Index: game.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>const grid = document.querySelector('.grid');\nconst resultDisplay = document.querySelector('#score-span');\nconst pauseButton = document.querySelector('#pause');\nconst continueButton = document.querySelector('#continue');\nconst restartButton = document.querySelector('#restart');\nconst timerDisplay = document.querySelector('#timer');\nconst width = 15;\nconst height = 15;\nconst enemiesRemoved = [];\nlet currentShooterIndex = 202;\nlet isGoingRight = true;\nlet direction = 1;\nlet results = 0;\nlet isPaused = false;\nlet gameOver = false;\nlet lastTime = 0;\nconst enemySpeed = 900; // Time in milliseconds between enemy movements\nlet startTime = 0; // To track the start time of the game\nlet elapsedTime = 0; // To track the elapsed time\n\n// Create the grid for the game\nfor (let i = 0; i < width * width; i++) {\n    const square = document.createElement('div');\n    grid.appendChild(square);\n}\n\n// Create an array from the square\nconst squares = Array.from(document.querySelectorAll('.grid div'));\n\n// Create an array for the enemies\nconst enemies = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,\n    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,\n    30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40\n];\n\n// Draw the enemy ships\nfunction draw() {\n    for (let i = 0; i < enemies.length; i++) {\n        if (!enemiesRemoved.includes(i)) {\n            squares[enemies[i]].classList.add('enemy');\n        }\n    }\n}\ndraw();\n\nsquares[currentShooterIndex].classList.add('player');\n\n// Function to remove the enemies\nfunction remove() {\n    for (let i = 0; i < enemies.length; i++) {\n        squares[enemies[i]].classList.remove('enemy');\n    }\n}\n\n// Moving the player(shooter) left and right\nfunction moveShooter(e) {\n    if (isPaused || gameOver) return;\n    squares[currentShooterIndex].classList.remove('player');\n    switch (e.key) {\n        case 'ArrowLeft':\n            if (currentShooterIndex % width !== 0) currentShooterIndex -= 1;\n            break;\n        case 'ArrowRight':\n            if (currentShooterIndex % width < width - 1) currentShooterIndex += 1;\n            break;\n    }\n    squares[currentShooterIndex].classList.add('player');\n}\ndocument.addEventListener('keydown', moveShooter);\n\n// Function to move the enemies\nfunction moveEnemies(timestamp) {\n    if (isPaused || gameOver) return;\n\n    if (!startTime) startTime = timestamp; // Initialize start time\n    if (!lastTime) lastTime = timestamp;\n    const deltaTime = timestamp - lastTime;\n\n    // Update the timer\n    elapsedTime = timestamp - startTime;\n    updateTimer(elapsedTime);\n\n    if (deltaTime >= enemySpeed) {\n        lastTime = timestamp;\n\n        const leftEdge = enemies[0] % width === 0;\n        const rightEdge = enemies[enemies.length - 1] % width === width - 1;\n        remove();\n\n        // Check if any enemy has reached the bottom\n        for (let i = 0; i < enemies.length; i++) {\n            if (enemies[i] >= width * (height - 1)) { // Check if enemy is in the last row\n                gameOver = true;\n                alert(\"Game Over! The enemies reached the bottom.\");\n                return; // Stop further execution\n            }\n        }\n\n        // Move enemies left or right and down\n        if (rightEdge && isGoingRight) {\n            for (let i = 0; i < enemies.length; i++) {\n                enemies[i] += width + 1;\n                direction = -1;\n                isGoingRight = false;\n            }\n        }\n\n        if (leftEdge && !isGoingRight) {\n            for (let i = 0; i < enemies.length; i++) {\n                enemies[i] += width - 1;\n                direction = 1;\n                isGoingRight = true;\n            }\n        }\n\n        for (let i = 0; i < enemies.length; i++) {\n            enemies[i] += direction;\n        }\n        draw();\n\n        // Game over: lose if player is hit by an enemy\n        if (squares[currentShooterIndex].classList.contains('enemy')) {\n            gameOver = true;\n            alert(\"Game Over! You lost\");\n            return;\n        }\n\n        // Game over: win if all enemies are removed\n        if (enemiesRemoved.length === enemies.length) {\n            gameOver = true;\n            alert(\"You win\");\n            return;\n        }\n\n        // Game over: lose if enemies disappear without being shot\n        let allEnemiesOffScreen = true;\n        for (let i = 0; i < enemies.length; i++) {\n            if (enemies[i] < width * height) { // Check if any enemy is still on the grid\n                allEnemiesOffScreen = false;\n                break;\n            }\n        }\n        if (allEnemiesOffScreen) {\n            gameOver = true;\n            alert(\"Game Over! The enemies escaped.\");\n            return;\n        }\n    }\n\n    requestAnimationFrame(moveEnemies);\n}\n\n// Function to update the timer display\nfunction updateTimer(time) {\n    const minutes = Math.floor(time / 60000).toString().padStart(2, '0');\n    const seconds = Math.floor((time % 60000) / 1000).toString().padStart(2, '0');\n    timerDisplay.textContent = `${minutes}:${seconds}`;\n}\n\n// Start the game loop\nrequestAnimationFrame(moveEnemies);\n\nfunction shoot(e) {\n    if (isPaused || gameOver) return;\n    if (e.keyCode !== 32) return;\n    let BulletId;\n    let currentBulletIndex = currentShooterIndex;\n\n    function moveBullet() {\n        if (gameOver) return;\n        squares[currentBulletIndex].classList.remove('bullet');\n        currentBulletIndex -= width;\n        squares[currentBulletIndex].classList.add('bullet');\n\n        if (squares[currentBulletIndex].classList.contains('enemy')) {\n            squares[currentBulletIndex].classList.remove('enemy');\n            squares[currentBulletIndex].classList.remove('bullet');\n            squares[currentBulletIndex].classList.add('boom');\n\n            setTimeout(() => squares[currentBulletIndex].classList.remove('boom'), 300);\n            clearInterval(BulletId);\n\n            const enemyRemoved = enemies.indexOf(currentBulletIndex);\n            enemiesRemoved.push(enemyRemoved);\n            results++;\n            resultDisplay.innerHTML = results.toString();\n        }\n    }\n\n    if (e.keyCode === 32) {\n        BulletId = setInterval(moveBullet, 100);\n    }\n}\n\ndocument.addEventListener('keydown', shoot);\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game.js b/game.js
+--- a/game.js	
++++ b/game.js	
+@@ -4,9 +4,12 @@
+ const continueButton = document.querySelector('#continue');
+ const restartButton = document.querySelector('#restart');
+ const timerDisplay = document.querySelector('#timer');
++const lifeCount = document.getElementById("lives-span");
+ const width = 15;
++const enemySpeed = 300; // Time in milliseconds between enemy movements
+ const height = 15;
+-const enemiesRemoved = [];
++
++let enemiesRemoved = [];
+ let currentShooterIndex = 202;
+ let isGoingRight = true;
+ let direction = 1;
+@@ -14,9 +17,9 @@
+ let isPaused = false;
+ let gameOver = false;
+ let lastTime = 0;
+-const enemySpeed = 900; // Time in milliseconds between enemy movements
+ let startTime = 0; // To track the start time of the game
+ let elapsedTime = 0; // To track the elapsed time
++let lives = 3;
+ 
+ // Create the grid for the game
+ for (let i = 0; i < width * width; i++) {
+@@ -70,7 +73,16 @@
+ 
+ // Function to move the enemies
+ function moveEnemies(timestamp) {
+-    if (isPaused || gameOver) return;
++    if (isPaused){
++        requestAnimationFrame(removeBullets);
++        return;
++    }
++
++    if(gameOver){
++        requestAnimationFrame(removeBullets);
++        lifeCount.innerText = Number(0).toString()
++        return;
++    }
+ 
+     if (!startTime) startTime = timestamp; // Initialize start time
+     if (!lastTime) lastTime = timestamp;
+@@ -79,19 +91,19 @@
+     // Update the timer
+     elapsedTime = timestamp - startTime;
+     updateTimer(elapsedTime);
+-
+     if (deltaTime >= enemySpeed) {
+         lastTime = timestamp;
+ 
+         const leftEdge = enemies[0] % width === 0;
+         const rightEdge = enemies[enemies.length - 1] % width === width - 1;
+-        remove();
++        // requestAnimationFrame(remove);
++        remove()
+ 
+         // Check if any enemy has reached the bottom
+         for (let i = 0; i < enemies.length; i++) {
+             if (enemies[i] >= width * (height - 1)) { // Check if enemy is in the last row
+-                gameOver = true;
+-                alert("Game Over! The enemies reached the bottom.");
++                // gameOver = true;
++                showNotification("enemies repositioning.");
+                 return; // Stop further execution
+             }
+         }
+@@ -115,20 +127,24 @@
+ 
+         for (let i = 0; i < enemies.length; i++) {
+             enemies[i] += direction;
++            if(squares[enemies[i]].classList.contains('player')){
++                // enemy has reached the player so we need to reset their position back to the top while maintaining everything else
++                looseLife();
++            }
+         }
+         draw();
+ 
+-        // Game over: lose if player is hit by an enemy
++        // reduce one life if a player touches the enemy
+         if (squares[currentShooterIndex].classList.contains('enemy')) {
+-            gameOver = true;
+-            alert("Game Over! You lost");
++            looseLife();
++            // showNotification("Game Over! You lost",'red');
+             return;
+         }
+ 
+         // Game over: win if all enemies are removed
+         if (enemiesRemoved.length === enemies.length) {
+             gameOver = true;
+-            alert("You win");
++            showNotification("You win", 'green');
+             return;
+         }
+ 
+@@ -142,7 +158,7 @@
+         }
+         if (allEnemiesOffScreen) {
+             gameOver = true;
+-            alert("Game Over! The enemies escaped.");
++            showNotification("Game Over! The enemies escaped.");
+             return;
+         }
+     }
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"ALL\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"c4c885c9-001d-46eb-9603-6dae936e7996\" name=\"Changes\" comment=\"\">\n      <change afterPath=\"$PROJECT_DIR$/favicon.ico\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/main.js\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/game.js\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/game.js\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/index.css\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/index.css\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/index.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/index.html\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"JavaScript File\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"GOROOT\" url=\"file://$PROJECT_DIR$/../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.2.linux-amd64\" />\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"move-shooter\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;rayjonesjay&quot;\n  }\n}</component>\n  <component name=\"GithubPullRequestsUISettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;url&quot;: &quot;https://github.com/kh3rld/make-your-game.git&quot;,\n    &quot;accountId&quot;: &quot;bd25895b-5790-47e0-8861-7d21274b6724&quot;\n  }\n}</component>\n  <component name=\"GoLibraries\">\n    <option name=\"indexEntireGoPath\" value=\"true\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 1\n}</component>\n  <component name=\"ProjectId\" id=\"2tU7dQFoIpMP6GOCSPoY2BlV3Ua\" />\n  <component name=\"ProjectLevelVcsManager\">\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"ASKED_ADD_EXTERNAL_FILES\": \"true\",\n    \"ASKED_SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\n    \"Node.js.game.js.executor\": \"Run\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"RunOnceActivity.go.formatter.settings.were.checked\": \"true\",\n    \"RunOnceActivity.go.migrated.go.modules.settings\": \"true\",\n    \"RunOnceActivity.go.modules.go.list.on.any.changes.was.set\": \"true\",\n    \"git-widget-placeholder\": \"game-loop\",\n    \"go.import.settings.migrated\": \"true\",\n    \"go.sdk.automatically.set\": \"true\",\n    \"last_opened_file_path\": \"/home/ramuiruri/make-your-game\",\n    \"node.js.detected.package.eslint\": \"true\",\n    \"node.js.detected.package.tslint\": \"true\",\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\n    \"nodejs_package_manager_path\": \"npm\",\n    \"vue.rearranger.settings.migration\": \"true\"\n  }\n}]]></component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-gosdk-33c477a475b1-e0158606a674-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-241.18034.61\" />\n        <option value=\"bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-GO-241.18034.61\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"c4c885c9-001d-46eb-9603-6dae936e7996\" name=\"Changes\" comment=\"\" />\n      <created>1740394885429</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1740394885429</updated>\n      <workItem from=\"1740394886510\" duration=\"20284000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <option name=\"ADD_EXTERNAL_FILES_SILENTLY\" value=\"true\" />\n  </component>\n  <component name=\"VgoProject\">\n    <integration-enabled>false</integration-enabled>\n    <settings-migrated>true</settings-migrated>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	
++++ b/.idea/workspace.xml	
+@@ -5,11 +5,10 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="c4c885c9-001d-46eb-9603-6dae936e7996" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/favicon.ico" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/game.js" beforeDir="false" afterPath="$PROJECT_DIR$/game.js" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/index.css" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -27,7 +26,7 @@
+   <component name="Git.Settings">
+     <option name="RECENT_BRANCH_BY_REPOSITORY">
+       <map>
+-        <entry key="$PROJECT_DIR$" value="move-shooter" />
++        <entry key="$PROJECT_DIR$" value="enemy-movement" />
+       </map>
+     </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+@@ -58,27 +57,55 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "ASKED_ADD_EXTERNAL_FILES": "true",
+-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+-    "Node.js.game.js.executor": "Run",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+-    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+-    "git-widget-placeholder": "game-loop",
+-    "go.import.settings.migrated": "true",
+-    "go.sdk.automatically.set": "true",
+-    "last_opened_file_path": "/home/ramuiruri/make-your-game",
+-    "node.js.detected.package.eslint": "true",
+-    "node.js.detected.package.tslint": "true",
+-    "node.js.selected.package.eslint": "(autodetect)",
+-    "node.js.selected.package.tslint": "(autodetect)",
+-    "nodejs_package_manager_path": "npm",
+-    "vue.rearranger.settings.migration": "true"
+-  }
+-}]]></component>
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
++    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
++    &quot;Go Build.go build test.go.executor&quot;: &quot;Run&quot;,
++    &quot;Node.js.game.js.executor&quot;: &quot;Run&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;feat-lives&quot;,
++    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
++    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
++    &quot;last_opened_file_path&quot;: &quot;/home/ramuiruri/make-your-game&quot;,
++    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
++    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
++    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
++    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
++    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
++    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
++  }
++}</component>
++  <component name="RunManager" selected="Go Build.go build test.go">
++    <configuration name="go build api.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
++      <module name="make-your-game" />
++      <working_directory value="$PROJECT_DIR$" />
++      <kind value="FILE" />
++      <directory value="$PROJECT_DIR$" />
++      <filePath value="$APPLICATION_CONFIG_DIR$/scratches/api.go" />
++      <method v="2" />
++    </configuration>
++    <configuration name="go build test.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
++      <module name="make-your-game" />
++      <working_directory value="$PROJECT_DIR$" />
++      <kind value="FILE" />
++      <directory value="$PROJECT_DIR$" />
++      <filePath value="$APPLICATION_CONFIG_DIR$/scratches/test.go" />
++      <method v="2" />
++    </configuration>
++    <recent_temporary>
++      <list>
++        <item itemvalue="Go Build.go build test.go" />
++        <item itemvalue="Go Build.go build api.go" />
++        <item itemvalue="Go Build.go build test.go" />
++        <item itemvalue="Go Build.go build api.go" />
++        <item itemvalue="Go Build.go build test.go" />
++      </list>
++    </recent_temporary>
++  </component>
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>

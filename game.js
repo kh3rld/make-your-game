@@ -4,12 +4,9 @@ const pauseButton = document.querySelector('#pause');
 const continueButton = document.querySelector('#continue');
 const restartButton = document.querySelector('#restart');
 const timerDisplay = document.querySelector('#timer');
-const lifeCount = document.getElementById("lives-span");
 const width = 15;
-const enemySpeed = 300; // Time in milliseconds between enemy movements
 const height = 15;
-
-let enemiesRemoved = [];
+const enemiesRemoved = [];
 let currentShooterIndex = 202;
 let isGoingRight = true;
 let direction = 1;
@@ -17,11 +14,11 @@ let results = 0;
 let isPaused = false;
 let gameOver = false;
 let lastTime = 0;
+const enemySpeed = 900; // Time in milliseconds between enemy movements
 let startTime = 0; // To track the start time of the game
 let elapsedTime = 0; // To track the elapsed time
-let lives = 3;
 
-
+// Create the grid for the game
 for (let i = 0; i < width * width; i++) {
     const square = document.createElement('div');
     grid.appendChild(square);
@@ -71,24 +68,9 @@ function moveShooter(e) {
 }
 document.addEventListener('keydown', moveShooter);
 
-function updateTimer(time) {
-    const minutes = Math.floor(time / 60000).toString().padStart(2, '0');
-    const seconds = Math.floor((time % 60000) / 1000).toString().padStart(2, '0');
-    timerDisplay.textContent = `${minutes}:${seconds}`;
-}
-
 // Function to move the enemies
 function moveEnemies(timestamp) {
-    if (isPaused){
-        requestAnimationFrame(removeBullets);
-        return;
-    }
-
-    if(gameOver){
-        requestAnimationFrame(removeBullets);
-        lifeCount.innerText = Number(0).toString()
-        return;
-    }
+    if (isPaused || gameOver) return;
 
     if (!startTime) startTime = timestamp; // Initialize start time
     if (!lastTime) lastTime = timestamp;
@@ -97,19 +79,21 @@ function moveEnemies(timestamp) {
     // Update the timer
     elapsedTime = timestamp - startTime;
     updateTimer(elapsedTime);
+
     if (deltaTime >= enemySpeed) {
         lastTime = timestamp;
 
         const leftEdge = enemies[0] % width === 0;
         const rightEdge = enemies[enemies.length - 1] % width === width - 1;
-        // requestAnimationFrame(remove);
-        remove()
+        remove();
 
         // Check if any enemy has reached the bottom
         for (let i = 0; i < enemies.length; i++) {
             if (enemies[i] >= width * (height - 1)) { // Check if enemy is in the last row
-                // gameOver = true;
-                showNotification("enemies repositioning.");
+                gameOver = true;
+                // 1. reduce enemy life
+                // 2. reset enemies position
+                showNotification("Game Over! The enemies reached the bottom.");
                 return; // Stop further execution
             }
         }
@@ -133,24 +117,20 @@ function moveEnemies(timestamp) {
 
         for (let i = 0; i < enemies.length; i++) {
             enemies[i] += direction;
-            if(squares[enemies[i]].classList.contains('player')){
-                // enemy has reached the player so we need to reset their position back to the top while maintaining everything else
-                looseLife();
-            }
         }
         draw();
 
-        // reduce one life if a player touches the enemy
+        // Game over: lose if player is hit by an enemy
         if (squares[currentShooterIndex].classList.contains('enemy')) {
-            looseLife();
-            // showNotification("Game Over! You lost",'red');
+            gameOver = true;
+            showNotification("Game Over! You lost");
             return;
         }
 
         // Game over: win if all enemies are removed
         if (enemiesRemoved.length === enemies.length) {
             gameOver = true;
-            showNotification("You win", 'green');
+            showNotification("You win");
             return;
         }
 
@@ -172,67 +152,65 @@ function moveEnemies(timestamp) {
     requestAnimationFrame(moveEnemies);
 }
 
+// Function to update the timer display
+function updateTimer(time) {
+    const minutes = Math.floor(time / 60000).toString().padStart(2, '0');
+    const seconds = Math.floor((time % 60000) / 1000).toString().padStart(2, '0');
+    timerDisplay.textContent = `${minutes}:${seconds}`;
+}
+
 // Start the game loop
 requestAnimationFrame(moveEnemies);
 
-let bullets = []; // Array to track active bullets
-
 function shoot(e) {
     if (isPaused || gameOver) return;
+    if (e.keyCode !== 32) return;
+    let BulletId;
+    let currentBulletIndex = currentShooterIndex;
 
-    if (e.key === 'ArrowUp') {
-        const bulletIndex = currentShooterIndex - width; // Start bullet above shooter
-        squares[bulletIndex].classList.add('bullet');
-        bullets.push({ index: bulletIndex, intervalId: null }); // Track bullet
+    function moveBullet() {
+        if (gameOver) return;
+        squares[currentBulletIndex].classList.remove('bullet');
+        currentBulletIndex -= width;
+        squares[currentBulletIndex].classList.add('bullet');
 
-        moveBullet(bullets.length - 1); // Start moving the bullet
+        if (squares[currentBulletIndex].classList.contains('enemy')) {
+            squares[currentBulletIndex].classList.remove('enemy');
+            squares[currentBulletIndex].classList.remove('bullet');
+            squares[currentBulletIndex].classList.add('boom');
+
+            setTimeout(() => squares[currentBulletIndex].classList.remove('boom'), 300);
+            clearInterval(BulletId);
+
+            const enemyRemoved = enemies.indexOf(currentBulletIndex);
+            enemiesRemoved.push(enemyRemoved);
+            results++;
+            resultDisplay.innerHTML = results.toString();
+        }
+    }
+
+    if(!isPaused || !gameOver){
+        if (e.keyCode === 32) {
+            BulletId = setInterval(moveBullet, 100);
+        }
     }
 }
 
-function moveBullet(bulletId) {
-    const bullet = bullets[bulletId];
-    if (!bullet) return;
+document.addEventListener('keydown', shoot);
 
-    bullet.intervalId = setInterval(() => {
-        const currentIndex = bullet.index;
+function showNotification(message) {
+    let notifyDiv = document.getElementById("notify");
+    let notifyMsg = document.getElementById("notify-msg");
 
-        // Remove bullet from current position
-        squares[currentIndex].classList.remove('bullet');
+    notifyMsg.textContent = message;
+    notifyDiv.className = "";
+    notifyDiv.style.display = "block";
+    notifyDiv.style.opacity = "1";
 
-        // Move bullet upward
-        const newIndex = currentIndex - width;
-        bullet.index = newIndex;
-
-        // Check if bullet goes off-screen
-        if (newIndex < 0) {
-            clearInterval(bullet.intervalId);
-            bullets.splice(bulletId, 1); // Remove bullet from tracking
-            return;
-        }
-
-        // Check if bullet hits an enemy
-        if (squares[newIndex].classList.contains('enemy')) {
-            clearInterval(bullet.intervalId);
-            bullets.splice(bulletId, 1); // Remove bullet from tracking
-
-            squares[newIndex].classList.remove('enemy');
-            squares[newIndex].classList.add('boom'); // Add explosion effect
-
-            setTimeout(() => squares[newIndex].classList.remove('boom'), 300); // Remove explosion after 300ms
-
-            const enemyRemoved = enemies.indexOf(newIndex);
-            if (enemyRemoved !== -1) {
-                enemiesRemoved.push(enemyRemoved);
-                results++;
-                resultDisplay.innerHTML = results.toString();
-            }
-            return;
-        }
-
-        squares[newIndex].classList.add('bullet');
-    }, 100);
-}
-if(!isPaused && !gameOver){
-    // this prevents shooting while game is over or paused
-    document.addEventListener('keydown', shoot);
+    setTimeout(() => {
+        notifyDiv.style.opacity = "0";
+        setTimeout(() => {
+            notifyDiv.style.display = "none";
+        }, 500);
+    }, 3000);
 }
