@@ -3,9 +3,22 @@ let initialEnemies = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
     30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
 ];
 // Pause the game
-pauseButton.addEventListener('click', () => {
-    isPaused = true;
+// Pause / Resume the game
+pauseButton.addEventListener('click', togglePause);
+
+document.addEventListener('keydown', (event) => {
+    if (event.key.toLowerCase() === 'p') {
+        togglePause();
+    }
 });
+
+function togglePause() {
+    isPaused = !isPaused;
+
+    if (!isPaused) {
+        requestAnimationFrame(moveEnemies);
+    }
+}
 
 // Continue the game
 continueButton.addEventListener('click', () => {
@@ -23,6 +36,13 @@ function showNotification(message) {
     notifyDiv.className = "";
     notifyDiv.style.display = "block";
     notifyDiv.style.opacity = "1";
+
+    setTimeout(() => {
+        notifyDiv.style.opacity = "0";
+        setTimeout(() => {
+            notifyDiv.style.display = "none";
+        }, 500);
+    }, 3000);
 }
 
 function removeBullets() {
