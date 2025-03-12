@@ -19,8 +19,6 @@ let gameOver = false;
 let lastTime = 0;
 let startTime = 0; // To track the start time of the game
 let elapsedTime = 0; // To track the elapsed time
-let lives = 3;
-
 
 for (let i = 0; i < width * width; i++) {
     const square = document.createElement('div');
@@ -44,7 +42,6 @@ function draw() {
         }
     }
 }
-draw();
 
 squares[currentShooterIndex].classList.add('player');
 
@@ -57,6 +54,7 @@ function remove() {
 
 // Moving the player(shooter) left and right
 function moveShooter(e) {
+    if(!hasStarted) return;
     if (isPaused || gameOver) return;
     squares[currentShooterIndex].classList.remove('player');
     switch (e.key) {
@@ -103,18 +101,18 @@ function moveEnemies(timestamp) {
         // Check all remaining enemies to find the leftmost and rightmost positions
         let leftEdge = false;
         let rightEdge = false;
-        
+
         // Find active enemies (those not in enemiesRemoved)
         const activeEnemies = enemies.filter((_, index) => !enemiesRemoved.includes(index));
-        
+
         if (activeEnemies.length > 0) {
             // Check if any active enemy is at the left edge
             leftEdge = activeEnemies.some(position => position % width === 0);
-            
+
             // Check if any active enemy is at the right edge
             rightEdge = activeEnemies.some(position => position % width === width - 1);
         }
-        
+
         // requestAnimationFrame(remove);
         remove()
 
@@ -184,11 +182,8 @@ function moveEnemies(timestamp) {
     requestAnimationFrame(moveEnemies);
 }
 
-// Start the game loop
-requestAnimationFrame(moveEnemies);
 
 let bullets = []; // Array to track active bullets
-
 function shoot(e) {
     if (isPaused || gameOver) return;
 

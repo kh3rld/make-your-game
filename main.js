@@ -23,6 +23,13 @@ function showNotification(message) {
     notifyDiv.className = "";
     notifyDiv.style.display = "block";
     notifyDiv.style.opacity = "1";
+
+    setTimeout(() => {
+        notifyDiv.style.opacity = "0";
+        setTimeout(() => {
+            notifyDiv.style.display = "none";
+        }, 500);
+    }, 3000);
 }
 
 function removeBullets() {
@@ -34,21 +41,27 @@ function removeBullets() {
 }
 
 function looseLife(){
-    if (lives <= 0) return;
-    
-    lives-- 
-    showNotification("You lost a life");
-    lifeCount.innerText = lives.toString();
-   
-    if (lives <= 0) {
-        gameOver = true;
-        showNotification("Game Over! You lost.");
+    if (lives > 0) {
+        lives--;
+        updateLivesDisplay();
+    }
+
+    if (lives === 0) {
+        handleGameOver(); // Call the game over handler
     }
 }
 
-function startGame() {
+function handleGameOver() {
+    gameOver = true;
+    hasStarted = false; // Allow the game to be restarted
+    startBtn.disabled = false; // Re-enable the start button
+    showNotification("Game Over! You lost.");
+}
+
+// Combined function to start or restart the game
+function initializeGame() {
     // Reset game state
-    console.log(">>>>>starting ,,,")
+    console.log(">>>>> Starting game...");
     enemiesRemoved.length = 0;
     results = 0;
     resultDisplay.innerHTML = results;
@@ -69,13 +82,38 @@ function startGame() {
     requestAnimationFrame(moveEnemies);
 }
 
+let hasStarted = false; // Track if the game has started
+
+// Event listener for the start button
 const startBtn = document.getElementById('start-button');
 startBtn.addEventListener('click', () => {
-    startGame();
-    startBtn.style.display = "none";
+    if (!hasStarted) { // Only initialize the game if it hasn't started yet
+        hasStarted = true;
+        initializeGame(); // Initialize the game
+        startBtn.disabled = true; // Disable the start
+    }
 });
 
-// Restart the game
-restartButton.addEventListener('click', () => {
-    startGame();
-});
+// // Event listener for the restart button
+// restartButton.addEventListener('click', () => {
+//     initializeGame(); // Initialize the game
+// });
+
+let lives = 3;
+// Function to reduce lives and update the HTML
+function reduceLives() {
+    if (lives > 0) {
+        lives--;
+        updateLivesDisplay();
+    }
+
+    if (lives === 0) {
+        gameOver = true;
+        showNotification('Game Over! You lost.');
+    }
+}
+
+function updateLivesDisplay() {
+    const livesSpan = document.getElementById('lives-span');
+    livesSpan.textContent = lives.toString();
+}

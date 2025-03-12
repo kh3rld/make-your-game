@@ -17,6 +17,7 @@ body {
   overflow: hidden;
   border: 1px solid rgb(46, 45, 45);
   border-bottom: 4px solid white;
+  z-index: 1;
 }
 
 .grid{
@@ -161,7 +162,9 @@ button:hover {
   text-align: center;
   font-weight: bold;
   transition: opacity 0.5s ease-in-out;
+  z-index: 2; /* Add a higher z-index to notify */
 }
+
 
 #notify-msg {
   padding: 10px;

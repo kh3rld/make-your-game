@@ -5,22 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4c885c9-001d-46eb-9603-6dae936e7996" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/assets/back.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/favicon/android-chrome-192x192.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/favicon/android-chrome-512x512.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/favicon/apple-touch-icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/favicon/favicon-16x16.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/favicon/favicon-32x32.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/favicon/favicon.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/favicon/site.webmanifest" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/icons8-laser-64.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/icons8-line-50.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/pixel-art-planet-surface-space-arcade-8bit-videogame-location-moon-landscape-galaxy-sky-vector-background-illustration_229548-3338.avif" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/favicon.ico" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/game.js" beforeDir="false" afterPath="$PROJECT_DIR$/game.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -39,7 +26,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="enemy-movement" />
+        <entry key="$PROJECT_DIR$" value="fixes" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -53,7 +40,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/kh3rld/make-your-game.git&quot;,
-    &quot;accountId&quot;: &quot;bd25895b-5790-47e0-8861-7d21274b6724&quot;
+    &quot;accountId&quot;: &quot;47fbd237-4810-4ca6-ab68-b0520f048fc7&quot;
   }
 }</component>
   <component name="GoLibraries">
@@ -76,13 +63,14 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Node.js.game.js.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "git-widget-placeholder": "reset-enemies",
+    "git-widget-placeholder": "fixes-001",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "/home/ramuiruri/make-your-game",
+    "last_opened_file_path": "/home/ghost",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
