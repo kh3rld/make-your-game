@@ -44,8 +44,12 @@ document.getElementById('restartLife').addEventListener('click', () => {
     startGame();
     document.getElementById('lifeLostModal').classList.add('hidden');
 });
+document.getElementById('restart1').addEventListener('click', () => {
+    startGame();
+    document.getElementById('lifeLostModal').classList.add('hidden');
+});
 
-document.getElementById('continue').addEventListener('click', () => {
+document.getElementById('continue1').addEventListener('click', () => {
     gameState = GAME_STATES.PLAYING;
     setGameState(GAME_STATES.PLAYING);
 });
