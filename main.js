@@ -1,37 +1,94 @@
-let initialEnemies = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-    30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
-];
-// Pause the game
-pauseButton.addEventListener('click', () => {
-    isPaused = true;
-});
+const startBtn = document.getElementById('start-button');
+const modals = {
+    start: document.getElementById('startModal'),
+    pause: document.getElementById('pauseModal'),
+    gameOver: document.getElementById('gameOverModal'),
+    win: document.getElementById('winModal'),
+    lifeLost: document.getElementById('lifeLostModal')
+};
 
-// Continue the game
-continueButton.addEventListener('click', () => {
-    if (isPaused) {
-        isPaused = false;
-        requestAnimationFrame(moveEnemies);
+
+// Event Listeners
+document.addEventListener('keydown', (e) => {
+    if (gameState === GAME_STATES.PLAYING) {
+        if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            const newPos = e.key === 'ArrowLeft' 
+                ? Math.max(currentShooterIndex - 1, 0)
+                : Math.min(currentShooterIndex + 1, width * height - 1);
+            
+            if (newPos % width === (e.key === 'ArrowLeft' ? width - 1 : 0)) return;
+            currentShooterIndex = newPos;
+        }
+
+        if (e.code === 'Space') {
+            bullets.push({ position: currentShooterIndex - width });
+        }
     }
 });
 
-// Restart the game
-restartButton.addEventListener('click', () => {
-    isPaused = false;
-    gameOver = false;
-    enemiesRemoved.length = 0;
-    results = 0;
-    resultDisplay.innerHTML = results;
-    currentShooterIndex = 202;
-    squares.forEach(square => square.classList.remove('enemy', 'player', 'bullet', 'boom'));
-    enemies.length = 0;
-    initialEnemies.forEach(index => enemies.push(index));
-    draw();
-    squares[currentShooterIndex].classList.add('player');
-    startTime = 0; // Reset the timer
-    elapsedTime = 0;
-    timerDisplay.textContent = '00:00';
-    requestAnimationFrame(moveEnemies);
+// Game Controls
+startBtn.addEventListener('click', startGame);
+document.getElementById('restart').addEventListener('click', () => {
+    startGame();
+});
+document.getElementById('restartGameOver').addEventListener('click', () => {
+    startGame();
+    document.getElementById('gameOverModal').classList.add('hidden');
 });
 
-const pressPlay = document.getElementById('press-play');
+document.getElementById('restartWin').addEventListener('click', () => {
+    startGame();
+    document.getElementById('winModal').classList.add('hidden');
+});
+document.getElementById('restartLife').addEventListener('click', () => {
+    startGame();
+    document.getElementById('lifeLostModal').classList.add('hidden');
+});
+
+document.getElementById('continue').addEventListener('click', () => {
+    gameState = GAME_STATES.PLAYING;
+    setGameState(GAME_STATES.PLAYING);
+});
+
+document.getElementById('continueLife').addEventListener('click', () => {
+    gameState = GAME_STATES.PLAYING;
+    setGameState(GAME_STATES.PLAYING);
+});
+
+document.getElementById('overlay').addEventListener('click', (e) => {
+    if (gameState === GAME_STATES.PAUSED && e.target === document.getElementById('overlay')) {
+        setGameState(GAME_STATES.PLAYING);
+    }
+});
+
+// Pause/Resume
+function togglePause() {
+    if (gameState === GAME_STATES.PLAYING) {
+        gameState = GAME_STATES.PAUSED;
+    } else if (gameState === GAME_STATES.PAUSED) {
+        gameState = GAME_STATES.PLAYING;
+    }
+    setGameState(gameState);
+}
+
+
+document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'p') {
+        togglePause();
+    }
+});
+
+
+
+// Game Initialization
+function startGame() {
+    resetGame();
+    gameState = GAME_STATES.PLAYING;
+    document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+    document.getElementById('overlay').classList.add('hidden');
+    setGameState(GAME_STATES.PLAYING);
+}
+
+// Initial Setup
+modals.start.classList.remove('hidden');
+document.getElementById('overlay').classList.remove('hidden');
