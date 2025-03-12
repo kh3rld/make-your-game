@@ -37,6 +37,7 @@ let results = 0;
 let startTime = 0;
 let lastMoveTime = 0;
 let isMovingDown = false;
+let totalGameTime = 0
 
 
 // Initialize Grid
@@ -50,6 +51,7 @@ for (let i = 0; i < width * height; i++) {
 // Main Game Loop
 function gameLoop(currentTime) {
     requestAnimationFrame(gameLoop);
+    // console.log("current time:", currentTime)
     const deltaTime = currentTime - lastFrameTime;
     
     if (deltaTime < FRAME_INTERVAL) return;
@@ -72,9 +74,11 @@ function gameLoop(currentTime) {
 
 function updateGame(currentTime) {
     // Update timer
-    if (!startTime) startTime = currentTime;
+    if (!startTime) {
+        startTime = currentTime;
+    }
     const elapsed = currentTime - startTime;
-    updateTimer(elapsed);
+    updateTimer(elapsed + totalGameTime);
 
     // Enemy movement
     if (currentTime - lastMoveTime >= enemySpeed) {
@@ -221,7 +225,7 @@ function updateTimer(ms) {
 
 pauseButton.addEventListener('click', () => {
     if (gameState === GAME_STATES.PLAYING) {
-        setGameState(GAME_STATES.PAUSED);
+        togglePause();
     }
 });
 
