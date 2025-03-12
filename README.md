@@ -1,10 +1,6 @@
-
 #  Make Your Game: Space Invaders
-
-## Introduction  
+ 
 A browser-based implementation of the classic arcade game, built to demonstrate core web development and game programming concepts. This project leverages modern JavaScript to recreate the iconic 1978 gameplay.
-
----
 
 ##  Program Overview & Functionality  
 **Core Systems**:  
@@ -19,8 +15,6 @@ A browser-based implementation of the classic arcade game, built to demonstrate 
 - Real-time bullet trajectory calculations  
 - Dynamic enemy formation adjustments  
 
----
-
 ## Features  
 - Classic enemy wave patterns with modern CSS animations  
 - Score tracking & lives system  
@@ -28,17 +22,13 @@ A browser-based implementation of the classic arcade game, built to demonstrate 
 - Frame-rate independent movement  
 - Visual feedback for hits (explosion effects)  
 
----
-
 ##  Installation & Setup  
 1. Clone repo:  
    ```bash
-   git clone https://github.com/yourusername/space-invaders.git
+   git clone https://github.com/kh3rld/make-your-game.git
    ```
 2. Open `index.html` in any modern browser  
 3. No build tools required - pure JS/CSS/HTML!
-
----
 
 ##  Learning Objectives  
 
@@ -111,8 +101,6 @@ A browser-based implementation of the classic arcade game, built to demonstrate 
   - Layout inspector (debug grid positioning)  
   - Frame debugger (break down rendering steps)  
 
----
-
 ##  Contribution  
 Contributions are welcome, feel free to  create a branch with your awesome  update or feature and submit a pull request
 
@@ -120,8 +108,6 @@ Contributions are welcome, feel free to  create a branch with your awesome  upda
 1. Fork repository  
 2. Create feature branch  
 3. Submit PR with detailed description  
-
----
 
 ## Authors  
 - Khalid Hussein
