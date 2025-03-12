@@ -7,7 +7,7 @@ const timerDisplay = document.querySelector('#timer-span');
 const lifeCount = document.getElementById("lives-span");
 const width = 15;
 const height = 15;
-const enemySpeed = 1000;
+const enemySpeed = 800;
 
 // Game State Management
 const GAME_STATES = {
