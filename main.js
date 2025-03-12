@@ -65,6 +65,10 @@ document.getElementById('overlay').addEventListener('click', (e) => {
 function togglePause() {
     if (gameState === GAME_STATES.PLAYING) {
         gameState = GAME_STATES.PAUSED;
+        requestAnimationFrame((currentTime) => {
+            totalGameTime += currentTime - startTime;
+            startTime = 0;
+        });
     } else if (gameState === GAME_STATES.PAUSED) {
         gameState = GAME_STATES.PLAYING;
     }
