@@ -66,7 +66,7 @@ function togglePause() {
     if (gameState === GAME_STATES.PLAYING) {
         gameState = GAME_STATES.PAUSED;
         requestAnimationFrame((currentTime) => {
-            totalGameTime += currentTime - startTime;
+            totalGameTime = currentTime - startTime;
             startTime = 0;
         });
     } else if (gameState === GAME_STATES.PAUSED) {

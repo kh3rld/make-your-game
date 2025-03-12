@@ -278,6 +278,7 @@ function resetGame() {
     results = 0;
     lives = 3;
     startTime = 0;
+    totalGameTime = 0;
     bullets = [];
     currentShooterIndex = 202;
     direction = 1;
