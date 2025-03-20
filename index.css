@@ -92,6 +92,13 @@ h1 {
   background-size: contain;
   align-items: center;
 }
+.enemy-bullet {
+  width: 30px;
+  height: 30px;
+  background: url('/assets/line-s-svgrepo-com.svg') no-repeat;
+  background-size: contain;
+  align-items: center;
+}
 .boom {
   width: 30px;
   height: 30px;
