@@ -71,7 +71,7 @@ function gameLoop(currentTime) {
     
 }
 
-
+// Update the updateGame function to ensure bullets move correctly
 function updateGame(currentTime) {
     // Update timer
     if (!startTime) {
@@ -86,16 +86,44 @@ function updateGame(currentTime) {
         lastMoveTime = currentTime;
     }
 
+    // Enemy shooting
+    if (currentTime - lastEnemyShootTime >= enemyShootInterval) {
+        enemyShoot();
+        lastEnemyShootTime = currentTime;
+    }
+
     // Update bullets
     bullets.forEach((bullet, index) => {
-        bullet.position -= width;
-        if (bullet.position < 0) bullets.splice(index, 1);
+        if (bullet.isEnemyBullet) {
+            bullet.position += width; // Enemy bullets move downwards
+        } else {
+            bullet.position -= width; // Player bullets move upwards
+        }
+        // Remove bullets that go off the grid
+        if (bullet.position < 0 || bullet.position >= width * height) {
+            bullets.splice(index, 1);
+        }
     });
+}
+// time between enemy shots in milliseconds (2 seconds)
+const enemyShootInterval = 2000;
+let lastEnemyShootTime = 0;
+
+function enemyShoot() {
+    const activeEnemies = enemies.filter((_, i) => !enemiesRemoved.includes(i));
+    if (activeEnemies.length === 0) return;
+
+    // Randomly select an enemy to shoot
+    const randomEnemyIndex = Math.floor(Math.random() * activeEnemies.length);
+    const enemyPos = activeEnemies[randomEnemyIndex];
+
+    // Create a new bullet at the enemy's position
+    bullets.push({ position: enemyPos, isEnemyBullet: true });
 }
 
 function moveEnemies() {
     const activeEnemies = enemies.filter((_, i) => !enemiesRemoved.includes(i));
-    
+
     if (isMovingDown) {
         // Vertical movement phase
         enemies = enemies.map(pos => pos + width);
@@ -107,18 +135,18 @@ function moveEnemies() {
     // Edge detection for horizontal movement
     let leftEdge = false;
     let rightEdge = false;
-    
+
     if (activeEnemies.length > 0) {
         const positions = activeEnemies.map(pos => pos % width);
         leftEdge = Math.min(...positions) <= 0;
         rightEdge = Math.max(...positions) >= width - 1;
     }
 
-    // Check if need to move down
+    // Check if you need to move down
     if ((direction === 1 && rightEdge) || (direction === -1 && leftEdge)) {
         isMovingDown = true;
         isGoingRight = direction === 1;
-        return; 
+        return;
     }
 
     // Regular horizontal movement
@@ -132,20 +160,33 @@ function moveEnemies() {
         return pos;
     });
 }
-function checkCollisions() {
-    // Bullet-enemy collisions
-    bullets.forEach((bullet, bulletIndex) => {
-        enemies.forEach((enemyPos, enemyIndex) => {
-            if (bullet.position === enemyPos && !enemiesRemoved.includes(enemyIndex)) {
-                handleEnemyHit(bulletIndex, enemyIndex);
-            }
-        });
-    });
 
+
+
+function checkCollisions() {
     // Player-enemy collision
     if (enemies.includes(currentShooterIndex)) {
         handleLifeLost();
     }
+
+    // Bullet-enemy collisions (only for player bullets)
+    bullets.forEach((bullet, bulletIndex) => {
+        if (!bullet.isEnemyBullet) { // Only player bullets can hit enemies
+            enemies.forEach((enemyPos, enemyIndex) => {
+                if (bullet.position === enemyPos && !enemiesRemoved.includes(enemyIndex)) {
+                    handleEnemyHit(bulletIndex, enemyIndex);
+                }
+            });
+        }
+    });
+
+    // Enemy bullet-player collision
+    bullets.forEach((bullet, bulletIndex) => {
+        if (bullet.isEnemyBullet && bullet.position === currentShooterIndex) {
+            handleLifeLost();
+            bullets.splice(bulletIndex, 1); // Remove the enemy bullet after hitting the player
+        }
+    });
 }
 
 function handleEnemyHit(bulletIndex, enemyIndex) {
@@ -166,7 +207,7 @@ function handleEnemyHit(bulletIndex, enemyIndex) {
 function handleLifeLost() {
     lives--;
     lifeCount.textContent = lives;
-    
+
     if (lives <= 0) {
         setGameState(GAME_STATES.GAME_OVER);
     } else {
@@ -191,7 +232,7 @@ function checkWinCondition() {
 function render() {
     // Clear all
     squares.forEach(square => {
-        square.classList.remove('enemy', 'player', 'bullet');
+        square.classList.remove('enemy', 'player', 'bullet','enemy-bullet');
     });
 
     // Draw active enemies
@@ -199,7 +240,7 @@ function render() {
         if (!enemiesRemoved.includes(index)) {
             const col = pos % width;
             const row = Math.floor(pos / width);
-            
+
             if (row < height && col < width) {
                 squares[pos].classList.add('enemy');
             }
@@ -212,7 +253,11 @@ function render() {
     // Draw bullets
     bullets.forEach(bullet => {
         if (bullet.position >= 0 && bullet.position < width * height) {
-            squares[bullet.position].classList.add('bullet');
+            if (bullet.isEnemyBullet){
+                squares[bullet.position].classList.add('enemy-bullet');
+            }else{
+                squares[bullet.position].classList.add('bullet');
+            }
         }
     });
 }
@@ -286,7 +331,7 @@ function resetGame() {
     
     // Clear grid
     squares.forEach(square => {
-        square.classList.remove('enemy', 'player', 'bullet', 'boom');
+        square.classList.remove('enemy', 'player', 'bullet', 'boom', 'enemy-bullet');
     });
     
     // Initial setup
